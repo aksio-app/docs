@@ -88,6 +88,5 @@
 [Any additional notes, references, or links that provide context for this decision]
 
 ## Approval
-**Decision Maker(s):** [Name(s)]
+**Decision Maker(s):** [Name(s)]  
 **Date Approved:** [YYYY-MM-DD]
-**Next Review Date:** [YYYY-MM-DD] (if applicable)

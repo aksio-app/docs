@@ -150,7 +150,7 @@ Go provides several advantages that make it ideal for a high-performance educati
 
 ## Implementation
 - **Environment**: Go 1.24+ with module support
-- **HTTP Framework**: See ADR-002 for HTTP framework selection
+- **HTTP Router Package**: See ADR-002 for HTTP router package selection
 - **Database**: pgx driver for PostgreSQL (3x faster than standard library)
 - **Testing**: Table-driven tests with >80% coverage requirement
 - **Benchmarking**: Performance benchmarks for critical paths
@@ -172,7 +172,7 @@ Go provides several advantages that make it ideal for a high-performance educati
 - Testing framework and tools
 
 ## Related Decisions
-- ADR-002: Go HTTP Framework Selection (pending)
+- ADR-002: Go HTTP Router Package Selection (pending)
 
 ## Notes
 Go was chosen primarily for its exceptional performance characteristics, concurrency model, and developer productivity benefits. The language's simplicity (25 keywords) and fast compilation times (5-10 seconds) enable rapid iteration while maintaining production-grade performance. Companies like Google, Uber, Docker, and Kubernetes have proven Go's ability to scale to millions of users while maintaining sub-millisecond latencies.
@@ -184,4 +184,3 @@ The decision aligns with our need for a platform that can grow from hundreds to 
 ## Approval
 **Decision Maker(s):** Olav Selnes Lorentzen  
 **Date Approved:** 2025-08-13
-**Next Review Date:** 2026-02-13
