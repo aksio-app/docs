@@ -1,10 +1,11 @@
-# ADR-004: Database Architecture - PostgreSQL with Apache AGE on GCP
+# ADR-004: Database Architecture - PostgreSQL with ltree on GCP
 
-> **Technical Note**: Performance benchmarks, cost estimates, and technical specifications in this document are rough approximations based on vendor documentation and community benchmarks as of August 2025. Numbers like "80% relational, 20% graph queries" are illustrative estimates, not measured metrics. Actual performance, costs, and query patterns will vary based on implementation, data volume, and usage patterns. The decision to use PostgreSQL with AGE is primarily driven by operational simplicity and unified data management, not marginal performance differences.
+> **Technical Note**: Performance benchmarks, cost estimates, and technical specifications in this document are rough approximations based on vendor documentation and community benchmarks as of August 2025. Numbers like "80% relational, 20% graph queries" are illustrative estimates, not measured metrics. Actual performance, costs, and query patterns will vary based on implementation, data volume, and usage patterns. The decision to use PostgreSQL with ltree is primarily driven by operational simplicity and unified data management, not marginal performance differences.
 
 ## Status
 - 2025-08-14 - Draft
 - 2025-08-14 - **Accepted**
+- 2025-08-14 - **Revised** - Changed from Apache AGE to ltree extension
 
 ## Context
 
@@ -32,13 +33,15 @@ Following our decision to use Google Cloud Platform (ADR-003), we need to select
 
 ## Decision
 
-We will use **PostgreSQL with Apache AGE (A Graph Extension)** running on **GCP Cloud SQL** as our primary database solution.
+We will use **PostgreSQL with ltree extension** running on **GCP Cloud SQL** as our primary database solution.
+
+> **Implementation Note**: Initially we considered Apache AGE for graph capabilities, but discovered it's not available in Cloud SQL. The ltree extension, which is available, actually provides a better fit for our hierarchical data needs.
 
 ## Rationale
 
 ### 1. Perfect GCP Cloud SQL Integration
 
-PostgreSQL with AGE on Cloud SQL provides unmatched integration with our chosen cloud platform:
+PostgreSQL with ltree on Cloud SQL provides unmatched integration with our chosen cloud platform:
 
 **Native GCP Support:**
 - **Fully Managed Service**: Cloud SQL handles patches, backups, replication automatically
@@ -67,46 +70,43 @@ Unlike dual-database architectures (Neo4j + PostgreSQL), our single-database app
 
 **Developer Productivity:**
 ```sql
--- Single query combining relational and graph data
-WITH RECURSIVE learning_path AS (
-  -- Graph traversal using AGE
-  SELECT * FROM cypher('curriculum_graph', $$
-    MATCH (t:Topic)-[:PREREQUISITE*]->(p:Topic)
-    WHERE t.id = $topic_id
-    RETURN p.id
-  $$, {'topic_id': 123}) AS (prerequisite_id agtype)
+-- Single query combining relational and hierarchical data
+-- ltree paths like 'course.module.topic.subtopic' provide natural hierarchy
+WITH learning_path AS (
+  SELECT 
+    path,
+    nlevel(path) as depth
+  FROM curriculum
+  WHERE path <@ 'course.module'  -- All descendants of module
 )
 -- Join with relational data
 SELECT 
   c.name AS course_name,
   u.progress_percentage,
-  lp.prerequisite_id
+  lp.path
 FROM courses c
 JOIN user_progress u ON u.course_id = c.id
-JOIN learning_path lp ON lp.prerequisite_id = c.topic_id
+JOIN learning_path lp ON lp.curriculum_id = c.topic_id
 WHERE u.user_id = current_user_id();
 ```
 
 ### 3. Educational Domain Fit
 
-PostgreSQL with AGE perfectly matches educational data patterns:
+PostgreSQL with ltree perfectly matches educational data patterns:
 
 **Hybrid Data Model:**
 - **Relational**: Student records, grades, schedules (80% of queries)
-- **Graph**: Learning paths, prerequisites, concept maps (20% of queries)
+- **Hierarchical**: Course → Module → Topic → Subtopic structures with ltree
 - **JSON/JSONB**: Flexible content storage, quiz questions, learning materials
 - **Arrays**: Multiple choice answers, tag systems, skill sets
 
 **Learning Path Optimization:**
 ```sql
--- Find optimal learning path using graph traversal
-SELECT * FROM cypher('curriculum_graph', $$
-  MATCH path = shortestPath(
-    (current:Topic {id: $current_topic})-[:PREREQUISITE*]->
-    (target:Topic {id: $target_topic})
-  )
-  RETURN path
-$$, {'current_topic': 1, 'target_topic': 10}) AS (path agtype);
+-- Find learning path using ltree hierarchical queries
+SELECT path, name
+FROM curriculum
+WHERE path BETWEEN 'course.module1' AND 'course.module5'
+ORDER BY path;
 ```
 
 ### 4. Security & Compliance Excellence
@@ -210,13 +210,13 @@ err := pgx.Select(&topics, `
 
 While Neo4j is the leading graph database, the dual-database approach has significant drawbacks for our use case:
 
-| Aspect | PostgreSQL + AGE | Neo4j + PostgreSQL |
-|--------|-----------------|-------------------|
+| Aspect | PostgreSQL + ltree | Neo4j + PostgreSQL |
+|--------|-------------------|-------------------|
 | **Monthly Cost (GCP)** | $35-75 | $200-400 |
 | **Operational Complexity** | Single system | Two systems to manage |
 | **Transaction Boundaries** | Full ACID across all data | No distributed transactions |
 | **Backup/Recovery** | Single process | Must coordinate two systems |
-| **Learning Curve** | SQL + Cypher | SQL + Cypher + Sync logic |
+| **Learning Curve** | SQL + ltree operators | SQL + Cypher + Sync logic |
 | **GCP Integration** | Native Cloud SQL | Self-managed on GCE |
 
 ### Why Not SQL Server or Aurora?
@@ -228,14 +228,14 @@ While Neo4j is the leading graph database, the dual-database approach has signif
 ## Next Steps
 
 **Initial Setup:**
-- Enable PostgreSQL extensions (AGE, pgAudit, uuid-ossp)
-- Design schema that supports both relational and graph patterns
+- Enable PostgreSQL extensions (ltree, pgAudit, uuid-ossp)
+- Design schema that supports both relational and hierarchical patterns
 - Implement Row-Level Security for multi-tenancy
 
 **Ongoing Considerations:**
 - Monitor query performance and add indexes as needed
 - Evaluate read replicas when traffic increases
-- Consider specialized databases if graph requirements exceed AGE capabilities
+- Consider specialized databases if requirements change
 
 ## Consequences
 
@@ -250,17 +250,17 @@ While Neo4j is the leading graph database, the dual-database approach has signif
 
 ### Negative Consequences
 
-1. **Graph Limitations**: AGE less mature than Neo4j for complex graph operations
-2. **Learning Curve**: Team must learn both SQL and Cypher syntax
-3. **Graph Performance**: Some graph operations slower than dedicated graph DB
+1. **Graph Limitations**: ltree handles hierarchies well but not general graphs
+2. **Learning Curve**: Team must learn ltree operators
+3. **Graph Performance**: Complex graph operations would need workarounds
 
 ### Risk Mitigation
 
-**Graph Performance Concerns:**
+**Hierarchical Performance:**
 - Most queries (80%) are relational, where PostgreSQL excels
-- Graph queries can be optimized with proper indexing
-- Can add Neo4j later if graph requirements grow significantly
-- AGE is rapidly improving with active development
+- ltree is optimized for hierarchical queries
+- Can add graph database later if requirements evolve
+- PostgreSQL's recursive CTEs available for complex cases
 
 **Scaling Strategy:**
 - Start with single primary instance
@@ -290,7 +290,7 @@ While Neo4j is the leading graph database, the dual-database approach has signif
 ## References
 
 - [Cloud SQL for PostgreSQL Documentation](https://cloud.google.com/sql/docs/postgres)
-- [Apache AGE Documentation](https://age.apache.org/)
+- [PostgreSQL ltree Documentation](https://www.postgresql.org/docs/current/ltree.html)
 - [PostgreSQL Row Level Security](https://www.postgresql.org/docs/current/ddl-rowsecurity.html)
 - [pgAudit Documentation](https://www.pgaudit.org/)
 - [Cloud SQL Pricing](https://cloud.google.com/sql/pricing)
@@ -298,12 +298,12 @@ While Neo4j is the leading graph database, the dual-database approach has signif
 
 ## Conclusion
 
-PostgreSQL with Apache AGE on GCP Cloud SQL provides the optimal balance of:
+PostgreSQL with ltree on GCP Cloud SQL provides the optimal balance of:
 - **Simplicity**: Single database for all data types
 - **Cost-effectiveness**: 50-70% cheaper than alternatives
 - **GCP Integration**: Native Cloud SQL support with managed operations
 - **Security**: Enterprise-grade security with RLS and audit logging
-- **Flexibility**: Handles relational, graph, and document data models
+- **Flexibility**: Handles relational, hierarchical, and document data models
 
 This decision aligns perfectly with our GCP cloud strategy (ADR-003) and provides a solid foundation for building a scalable, secure, and cost-effective educational platform.
 
