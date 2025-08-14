@@ -3,10 +3,8 @@
 > **Technical Note**: Performance metrics and specifications in this document are rough estimates based on industry benchmarks and official documentation as of August 2025. Numbers like "10-100x faster" are order-of-magnitude approximations meant to illustrate relative performance differences, not precise measurements. Actual performance varies significantly based on implementation, hardware, and workload. For current benchmarks, consult official documentation.
 
 ## Status
+- 2025-08-10 - Draft
 - 2025-08-12 - **Accepted**
-
-## Date
-2025-08-13
 
 ## Context
 The Aksio platform requires a robust, performant backend service to handle educational data processing, user authentication, and API services. The backend must scale efficiently, handle high concurrency, and maintain low latency for real-time features.
