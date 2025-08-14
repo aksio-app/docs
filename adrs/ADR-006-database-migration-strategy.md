@@ -4,6 +4,7 @@
 
 ## Status
 - 2025-08-14 - Draft
+- 2025-08-14 - **Accepted**
 
 ## Context
 
@@ -288,5 +289,5 @@ The architecture described in this document supports growth from hundreds to mil
 
 ## Approval
 
-**Decision Maker(s):** [Pending]  
-**Date Approved:** [Pending]
+**Decision Maker(s):** Olav Selnes Lorentzen  
+**Date Approved:** 2025-08-14
