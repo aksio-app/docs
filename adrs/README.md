@@ -38,9 +38,9 @@ Each ADR follows a consistent template (see [ADR-XXX-title.md](ADR-XXX-title.md)
 | [ADR-002](ADR-002-go-http-router-package.md) | Go HTTP Router Package Selection | Accepted | 2025-08-14 | Chose Gin framework for HTTP routing due to performance and middleware ecosystem |
 | [ADR-003](ADR-003-cloud-provider-selection.md) | Cloud Provider Selection | Accepted | 2025-08-14 | Selected Google Cloud Platform for educational integration and Norwegian data center |
 | [ADR-004](ADR-004-database-architecture.md) | Database Architecture - PostgreSQL with Apache AGE on GCP | Accepted | 2025-08-14 | PostgreSQL with Apache AGE for unified relational and graph data management |
-| [ADR-005](ADR-005-authentication-strategy.md) | Authentication and User Management Strategy | Accepted | 2025-08-14 | Self-managed JWT authentication with 16+ age restriction for compliance simplicity |
+| [ADR-005](ADR-005-authentication-strategy.md) | Authentication and User Management Strategy | Accepted | 2025-08-14 | Self-managed authentication with 16+ age restriction for compliance simplicity |
 | [ADR-006](ADR-006-database-migration-strategy.md) | Database Migration Strategy | Accepted | 2025-08-14 | golang-migrate with phased implementation from MVP to enterprise scale |
-| [ADR-007](ADR-007-secrets-management.md) | Secrets Management Strategy | Proposed | 2025-01-14 | Google Secret Manager for secure credential storage with rotation and audit capabilities* |
+| [ADR-007](ADR-007-secrets-management.md) | Secrets Management Strategy | Accepted | 2025-08-14 | Google Secret Manager for secure credential storage with rotation and audit capabilities* |
 
 *Implementation details are documented internally for security reasons.
 
