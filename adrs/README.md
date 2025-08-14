@@ -14,7 +14,7 @@ An Architecture Decision Record (ADR) is a document that captures an important a
 
 ## ADR Structure
 
-Each ADR follows a consistent template (see [ADR-XXX-title.md](ADR-XXX-title.md)) with these sections:
+Each ADR follows a consistent template (see [ADR-XXX-title.md](/docs/adrs/ADR-XXX-title)) with these sections:
 
 1. **Status** - Current state of the decision (Proposed, Accepted, Rejected, Deprecated, Superseded)
 2. **Context** - The problem or situation motivating the decision
@@ -34,19 +34,19 @@ Each ADR follows a consistent template (see [ADR-XXX-title.md](ADR-XXX-title.md)
 
 | ADR | Title | Status | Date | Summary |
 |-----|-------|--------|------|---------|
-| [ADR-001](ADR-001-go-backend.md) | Choice of Go for Backend Development | Accepted | 2025-08-13 | Selected Go as the primary backend language for performance, concurrency, and operational simplicity |
-| [ADR-002](ADR-002-go-http-router-package.md) | Go HTTP Router Package Selection | Accepted | 2025-08-14 | Chose Gin framework for HTTP routing due to performance and middleware ecosystem |
-| [ADR-003](ADR-003-cloud-provider-selection.md) | Cloud Provider Selection | Accepted | 2025-08-14 | Selected Google Cloud Platform for educational integration and Norwegian data center |
-| [ADR-004](ADR-004-database-architecture.md) | Database Architecture - PostgreSQL with Apache AGE on GCP | Accepted | 2025-08-14 | PostgreSQL with Apache AGE for unified relational and graph data management |
-| [ADR-005](ADR-005-authentication-strategy.md) | Authentication and User Management Strategy | Accepted | 2025-08-14 | Self-managed authentication with 16+ age restriction for compliance simplicity |
-| [ADR-006](ADR-006-database-migration-strategy.md) | Database Migration Strategy | Accepted | 2025-08-14 | golang-migrate with phased implementation from MVP to enterprise scale |
-| [ADR-007](ADR-007-secrets-management.md) | Secrets Management Strategy | Accepted | 2025-08-14 | Google Secret Manager for secure credential storage with rotation and audit capabilities* |
+| [ADR-001](/docs/adrs/ADR-001-go-backend) | Choice of Go for Backend Development | Accepted | 2025-08-13 | Selected Go as the primary backend language for performance, concurrency, and operational simplicity |
+| [ADR-002](/docs/adrs/ADR-002-go-http-router-package) | Go HTTP Router Package Selection | Accepted | 2025-08-14 | Chose Gin framework for HTTP routing due to performance and middleware ecosystem |
+| [ADR-003](/docs/adrs/ADR-003-cloud-provider-selection) | Cloud Provider Selection | Accepted | 2025-08-14 | Selected Google Cloud Platform for educational integration and Norwegian data center |
+| [ADR-004](/docs/adrs/ADR-004-database-architecture) | Database Architecture - PostgreSQL with ltree on GCP | Accepted | 2025-08-14 | PostgreSQL with ltree extension for hierarchical data and efficient tree operations |
+| [ADR-005](/docs/adrs/ADR-005-authentication-strategy) | Authentication and User Management Strategy | Accepted | 2025-08-14 | Self-managed authentication with 16+ age restriction for compliance simplicity |
+| [ADR-006](/docs/adrs/ADR-006-database-migration-strategy) | Database Migration Strategy | Accepted | 2025-08-14 | golang-migrate with phased implementation from MVP to enterprise scale |
+| [ADR-007](/docs/adrs/ADR-007-secrets-management) | Secrets Management Strategy | Accepted | 2025-08-14 | Google Secret Manager for secure credential storage with rotation and audit capabilities* |
 
 *Implementation details are documented internally for security reasons.
 
 ## Creating a New ADR
 
-1. **Copy the template**: Start with [ADR-XXX-title.md](ADR-XXX-title.md)
+1. **Copy the template**: Start with [ADR-XXX-title.md](/docs/adrs/ADR-XXX-title)
 2. **Assign a number**: Use the next sequential number (e.g., ADR-006)
 3. **Use descriptive filename**: Format as `ADR-NNN-brief-description.md`
 4. **Set initial status**: Start with "Proposed" or "Draft"
