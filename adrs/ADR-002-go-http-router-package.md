@@ -3,10 +3,11 @@
 > **Technical Note**: Performance metrics and specifications in this document are rough estimates based on industry benchmarks and official documentation as of August 2025. Numbers are order-of-magnitude approximations meant to illustrate relative performance differences, not precise measurements. Actual performance varies significantly based on implementation, hardware, and workload.
 
 ## Status
-**DRAFT** - Under consideration
+**ACCEPTED** - Gin chosen as HTTP router
 
-## Date
-2025-08-13
+## Dates
+- 2025-08-13 - Draft
+- 2025-08-14 - **Accepted**
 
 ## Context
 Following the decision to use Go for our backend (ADR-001), we need to select an HTTP router package for building our REST API. The package will handle routing, middleware, request/response processing, and provide the foundation for our API endpoints.
@@ -22,11 +23,22 @@ Key requirements for our HTTP router package:
 - **WebSocket Support**: For real-time features (future requirement)
 
 ## Decision
-**TO BE DETERMINED** - Awaiting evaluation of options
+We have chosen **Gin** as our HTTP router package for the Aksio backend.
+
+### Rationale
+After evaluating the options, Gin provides the best balance of:
+1. **Maturity and Stability**: Largest community (50k+ GitHub stars) with extensive production usage
+2. **Developer Productivity**: Rich middleware ecosystem and built-in conveniences (validation, binding)
+3. **Performance**: Excellent performance characteristics suitable for our educational platform needs
+4. **Documentation**: Comprehensive documentation with abundant tutorials and examples
+5. **Team Familiarity**: Most widely known Go HTTP router package, easier to find developers with experience
+6. **Ecosystem**: Extensive collection of middleware and integrations already available
+
+While Echo offers a cleaner API and Chi is more idiomatic, Gin's massive ecosystem and community support make it the pragmatic choice for rapid development while maintaining production quality.
 
 ## Options Considered
 
-### Option 1: Gin
+### Option 1: Gin (Selected)
 **Description**: Currently the most popular Go HTTP router package with extensive middleware ecosystem.
 
 **Pros:**
@@ -99,7 +111,7 @@ Key requirements for our HTTP router package:
 - Fewer built-in conveniences
 - Requires more boilerplate code
 - Smaller ecosystem of Chi-specific middleware
-- Less structured than full frameworks
+- Less structured than full-featured packages
 
 ### Option 5: Standard Library (net/http + gorilla/mux or httprouter)
 **Description**: Use Go's standard library with a minimal router.
@@ -149,36 +161,42 @@ Key requirements for our HTTP router package:
 
 ## Consequences
 
-### If choosing a full-featured package (Gin/Echo/Fiber):
-**Positive:**
-- Faster initial development
-- Built-in solutions for common problems
-- Established patterns and best practices
-- Easier onboarding for new developers
+### With Gin as our chosen HTTP router package:
 
-**Negative:**
-- Package lock-in
-- Potential overhead for simple endpoints
-- Need to learn package-specific patterns
+**Positive Consequences:**
+- **Rapid Development**: Extensive middleware and built-in features accelerate feature delivery
+- **Large Talent Pool**: Easier to find Go developers familiar with Gin
+- **Proven Patterns**: Well-established patterns for authentication, validation, and error handling
+- **Community Support**: Large community means quick answers to problems and continuous improvements
+- **Production Ready**: Battle-tested in production by companies at scale
+- **Learning Resources**: Abundant tutorials, examples, and documentation
+- **Integration Ready**: Existing middleware for JWT, OAuth, CORS, rate limiting, etc.
 
-### If choosing minimal approach (Chi/net/http):
-**Positive:**
-- Maximum flexibility and control
-- Easier to understand what's happening
-- No package lock-in
-- Lighter dependency footprint
+**Negative Consequences:**
+- **Package Lock-in**: While migration is possible, we'll be coupled to Gin's patterns
+- **Memory Overhead**: Slightly higher memory usage compared to minimalist alternatives
+- **Learning Curve**: Developers need to learn Gin-specific patterns and conventions
+- **Opinionated Structure**: Must follow Gin's way of doing things, less flexibility than bare net/http
 
-**Negative:**
-- More boilerplate code
-- Slower initial development
-- Team needs to establish patterns
-- Fewer conveniences out of the box
+**Mitigation Strategies:**
+- Keep business logic separate from HTTP handlers to minimize package coupling
+- Use interfaces to abstract Gin-specific code where practical
+- Document Gin-specific patterns for team onboarding
+- Regular evaluation of package health and community activity
 
 ## Implementation Considerations
-- Migration path between frameworks (most are relatively easy except Fiber)
-- Team familiarity and learning curve
-- Long-term maintenance and framework longevity
-- Compatibility with our chosen deployment platform (GCP Cloud Run)
+
+### Immediate Actions:
+1. **Update go.mod**: Add Gin as a dependency to the backend project
+2. **Documentation**: Create team guidelines for Gin best practices
+3. **Testing setup**: Configure testing utilities for Gin handlers
+
+### Architecture Guidelines:
+- Keep HTTP concerns in handler layer only
+- Business logic should remain package-agnostic in service layer
+- Use Gin's built-in validation but duplicate critical validations in service layer
+- Leverage Gin's middleware chain for cross-cutting concerns
+- Use route groups to organize endpoints logically
 
 ## Risks and Mitigation
 | Risk | Impact | Probability | Mitigation Strategy |
@@ -197,10 +215,16 @@ Key requirements for our HTTP router package:
 - ADR-001: Choice of Go for Backend Development
 
 ## Notes
-The package choice should balance developer productivity with performance needs. Since our platform will handle real-time study scheduling and potentially thousands of concurrent students, performance is important but not at the cost of maintainability.
 
-Consider starting with a well-established package (Gin or Echo) and optimizing later if needed, as migration between packages in Go is generally straightforward due to the language's interface-based design.
+### Decision Factors:
+The choice of Gin balances developer productivity with performance needs. Our educational platform will handle real-time study scheduling and potentially thousands of concurrent students, making Gin's performance characteristics and scalability proven track record crucial.
+
+### Implementation Status:
+Gin is already partially integrated into the backend codebase, with authentication endpoints successfully implemented using Gin's router and middleware. This existing implementation validates the package choice and provides a foundation for expanding to other endpoints.
+
+### Future Considerations:
+While we're committing to Gin for the foreseeable future, the architecture should remain flexible enough to migrate if needed. The Go ecosystem's interface-based design makes such migrations feasible, though not trivial.
 
 ## Approval
-**Decision Maker(s):** [TO BE DETERMINED]  
-**Date Approved:** [PENDING]
+**Decision Maker(s):** Olav Selnes Lorentzen  
+**Date Approved:** 2025-08-14

@@ -3,7 +3,7 @@
 > **Technical Note**: Performance metrics and specifications in this document are rough estimates based on industry benchmarks and official documentation as of August 2025. Numbers like "10-100x faster" are order-of-magnitude approximations meant to illustrate relative performance differences, not precise measurements. Actual performance varies significantly based on implementation, hardware, and workload. For current benchmarks, consult official documentation.
 
 ## Status
-Accepted
+- 2025-08-12 - **Accepted**
 
 ## Date
 2025-08-13

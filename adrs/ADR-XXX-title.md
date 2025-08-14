@@ -3,8 +3,9 @@
 ## Status
 [Proposed | Accepted | Rejected | Deprecated | Superseded by ADR-YYY]
 
-## Date
-[YYYY-MM-DD]
+## Dates
+- [YYYY-MM-DD] - [Status (Draft/Accepted)]
+- ...
 
 ## Context
 [Describe the problem or situation that motivates this decision. Include any constraints, requirements, or goals that influence the decision.]
